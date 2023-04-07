@@ -35,7 +35,7 @@ class Graph:
 
     # алгоритм Флёри
 
-    # This function removes edge u-v from graph   
+    # Эта функция удаляет ребро u-v из графика
     def rmvEdge(self, u, v):
         for index, key in enumerate(self.graph[u]):
             if key == v:
@@ -44,7 +44,7 @@ class Graph:
             if key == u:
                 self.graph[v].pop(index)
  
-    # A DFS based function to count reachable vertices from v
+    # Функция на основе DFS для подсчета достижимых вершин из v
     def DFSCount(self, v, visited):
         count = 1
         visited[v] = True
@@ -53,41 +53,41 @@ class Graph:
                 count = count + self.DFSCount(i, visited)        
         return count
  
-    # The function to check if edge u-v can be considered as next edge in
-    # Euler Tour
+    # Функция для проверки того, можно ли рассматривать ребро u-v как следующее ребро в
+    # Тур по Эйлеру
     def isValidNextEdge(self, u, v):
-        # The edge u-v is valid in one of the following two cases:
+    # Ребро u-v допустимо в одном из следующих двух случаев:
   
-          #  1) If v is the only adjacent vertex of u
+          # 1) Если v - единственная смежная вершина u
         if len(self.graph[u]) == 1:
             return True
         else:
             '''
-             2) If there are multiple adjacents, then u-v is not a bridge
-                 Do following steps to check if u-v is a bridge
+             2) Если существует несколько смежных, то u-v не является мостом
+                Выполните следующие действия, чтобы проверить, является ли u-v мостом
   
-            2.a) count of vertices reachable from u'''   
+            2.a) количество вершин, достижимых из u'''   
             visited =[False]*(self.V)
             count1 = self.DFSCount(u, visited)
  
-            '''2.b) Remove edge (u, v) and after removing the edge, count
-                vertices reachable from u'''
+            '''2.b) Удалите ребро (u, v) и после удаления ребра посчитайте
+                вершины, достижимые из u'''
             self.rmvEdge(u, v)
             visited =[False]*(self.V)
             count2 = self.DFSCount(u, visited)
  
-            #2.c) Add the edge back to the graph
+            #2.c) Добавьте ребро обратно к графику
             self.addEdge(u,v)
  
-            # 2.d) If count1 is greater, then edge (u, v) is a bridge
+            # 2.d) Если количество больше, то ребро (u, v) является мостом
             return False if count1 > count2 else True
  
  
-    # Print Euler tour starting from vertex u
+    # Печать Эйлерова тура
     def printEulerUtil(self, u):
-        #Recur for all the vertices adjacent to this vertex
+        # Повторяется для всех вершин, смежных с этой вершиной
         for v in self.graph[u]:
-            #If edge u-v is not removed and it's a a valid next edge
+            # Если ребро u-v не удалено и это допустимое следующее ребро
             if self.isValidNextEdge(u, v):
                 print("%d-%d " %(u,v)),
                 self.rmvEdge(u, v)
@@ -95,46 +95,41 @@ class Graph:
  
  
      
-    '''The main function that print Eulerian Trail. It first finds an odd
-   degree vertex (if there is any) and then calls printEulerUtil()
-   to print the path '''
+    ''' Основная функция, которая выводит эйлерову траекторию. Сначала он находит
+        вершину нечетной степени (если таковая имеется), а затем вызывает printEulerUtil()
+        чтобы напечатать путь '''
     def printEulerTour(self):
-        #Find a vertex with odd degree
         u = 0
         for i in range(self.V):
             if len(self.graph[i]) %2 != 0 :
                 u = i
                 break
-        # Print tour starting from odd vertex
         self.printEulerUtil(u)
 
     # Алгоритм Косайджу
-    # A function used by DFS
+
+    # Функция использует поиск в глубину
     def DFSUtil(self,v,visited):
-            # Mark the current node as visited and print it
             visited[v]= True
             print(v)
-            #Recur for all the vertices adjacent to this vertex
             for i in self.graph[v]:
                 if visited[i]==False:
                     self.DFSUtil(i,visited)
     
     
-    def fillOrder(self,v,visited, stack):
-            # Mark the current node as visited
+    def fillOrder(self,v,visited, stack):           
             visited[v]= True
-            #Recur for all the vertices adjacent to this vertex
             for i in self.graph[v]:
                 if visited[i]==False:
                     self.fillOrder(i, visited, stack)
             stack = stack.append(v)
         
     
-        # Function that returns reverse (or transpose) of this graph
+        # Функция, которая возвращает обратное (или транспонирование) этого графика
     def getTranspose(self):
             g = Graph(self.V)
     
-            # Recur for all the vertices adjacent to this vertex
+            # Повторяется для всех вершин, смежных с этой вершиной
             for i in self.graph:
                 for j in self.graph[i]:
                     g.addEdge(j,i)
@@ -142,26 +137,23 @@ class Graph:
  
   
   
-    # The main function that finds and prints all strongly
-    # connected components
+    # Основная функция, которая находит и печатает все файлы
+    # подключенные компоненты
     def printSCCs(self):
             
         stack = []
-            # Mark all the vertices as not visited (For first DFS)
+            # Отметьте все вершины как не посещенные (для первого DFS)
         visited =[False]*(self.V)
-            # Fill vertices in stack according to their finishing
-            # times
+            # Заполните вершины в стеке в соответствии со временем их завершения
         for i in range(self.V):
                 if visited[i]==False:
                     self.fillOrder(i, visited, stack)
     
-            # Create a reversed graph
+            # Создайте перевернутый график
         gr = self.getTranspose()
-            
-            # Mark all the vertices as not visited (For second DFS)
+            # Отметить все вершины как не посещенные (для второго DFS)
         visited =[False]*(self.V)
-    
-            # Now process all vertices in order defined by Stack
+            # Теперь обработайте все вершины в порядке, определенном стеком
         while stack:
             i = stack.pop()
             if visited[i]==False:
